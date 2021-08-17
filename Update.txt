@@ -1,0 +1,10 @@
+Update:
+    Option to change homepage from blog page from to static page;
+    Ability to change Products Table Header value;
+    Added slug for pages;
+    Now Editorial Workflow will be disabled when using GitLab to prevent errors(because Editorial Workflow is not avalible in GitLab);
+    Added option to add category in link in site information in admin panel;
+    Added some extra schemas for posts;
+    Added option to add noindex or nofollow to any page and also to remove any page from sitemap at the end of site information in admin panel (Write slug as e.g. "/news/" inside the value of these options);
+    Now Automatically add h2 and h3 in table of contents;
+    and some other small changes and fixes;
