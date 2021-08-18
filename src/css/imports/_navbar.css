@@ -123,7 +123,7 @@
   }
   div#navMenu .navbar-end {
     margin-top: 10px;
-    background-color: var(--custom-color-5);
+    background-color: #FFFFFF;
   }
   .navbar-item {
     border-bottom: 1px solid var(--custom-color-7);
