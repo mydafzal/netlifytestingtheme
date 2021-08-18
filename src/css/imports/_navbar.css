@@ -3,7 +3,7 @@
   z-index: 30;
   padding: 6px 0.75rem;
   box-shadow: var(--default-box-shadow);
-  background-color: var(--custom-color-2);
+  background-color: #FFFFFF;
 }
 .navbar .container {
   display: flex;
