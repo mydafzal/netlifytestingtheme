@@ -6,7 +6,105 @@ import HeadData from "../components/HeadData.js";
 import { Calendar } from "../components/SVG.js";
 import SiteMetaData from "../components/SiteMetadata.js";
 import { FindCategory, FillSpace, LinkFix } from "../components/SimpleFunctions.js";
+const BlogPost = (props) => {
+  const { siteURL, title: siteName, logoLarge } = SiteMetaData();
+  const { mdx: post } = props.data;
+  const { frontmatter } = post;
+  const { base: img } = frontmatter.featuredimage;
+  const path = `${siteURL}/${frontmatter.slug}/`;
+  const { categoryName, categoryLink } = FindCategory(frontmatter.category);
 
+  const articleSchema = `{
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "${path}"
+    },
+    "headline": "${frontmatter.title}",
+    "image": [
+      "${siteURL}/img/${img}"
+     ],
+    "datePublished": "${frontmatter.sdate}",
+    "dateModified": "${frontmatter.moddate}",
+    "author": {
+      "@type": "Person",
+      "name": "${frontmatter.author}"
+    },
+     "publisher": {
+      "@type": "Organization",
+      "name": "${siteName}",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "${siteURL}/img/${logoLarge.base}"
+      }
+    }
+  }`;
+
+  const ratingSchema = `{
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "${frontmatter.title}",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "${frontmatter.rvalue.toString()}",
+      "ratingCount": "${frontmatter.rcount.toString()}",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  }`;
+
+  const faqSchema = `{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      ${frontmatter.faq?.map(
+        (item) => `{
+          "@type": "Question",
+          "name": "${item.ques}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "${item.ans}" 
+          }
+        }`
+      )}
+    ]
+  }`;
+
+  const productSchema = `{
+    "@context": "http://schema.org",
+    "@type": "ItemList",
+    "url": "${path}",
+    "name": "${frontmatter.title}",
+    "itemListElement": [
+      ${frontmatter.products?.map(
+        (item, index) => `{
+        "@type":"ListItem",
+        "position":${index + 1},
+        "url":"${path}#${CreateID(item.name)}",
+        "@id":"#${CreateID(item.name)}",
+        "name":"${item.name}"
+      }`
+      )}
+    ]
+  }`;
+
+  return (
+    <Layout type="post" title={frontmatter.title} titleParent={categoryName} link={`${categoryLink}/`}>
+      <div className="hfeed">
+        <article className="hentry">
+          <HeadData title={frontmatter.seoTitle} description={frontmatter.seoDescription} image={img} bodyAttributes={{ itemtype: "https://schema.org/Blog", itemscope: "itemscope" }}>
+            {frontmatter.author && <script type="application/ld+json">{articleSchema}</script>}
+            {frontmatter.rating && <script type="application/ld+json">{ratingSchema}</script>}
+            {frontmatter.products?.length && <script type="application/ld+json">{productSchema}</script>}
+            {frontmatter.faq?.length && <script type="application/ld+json">{faqSchema}</script>}
+          </HeadData>
+          <BlogPostTemplate body={post.body} frontmatter={frontmatter} link={path} tocdata={props.pageContext.toc} headings={post.headings} />
+        </article>
+      </div>
+    </Layout>
+  );
+};
 const IndexTemplate = ({ data }) => {
   const singlePost = data.FP.nodes[0];
   const otherPosts = data.OP.nodes;
@@ -102,8 +200,6 @@ const IndexTemplate = ({ data }) => {
     </Layout>
   );
 };
-
-
 IndexTemplate.propTypes = {
   data: PropTypes.shape({
     allMarkdownRemark: PropTypes.shape({
